@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel="stylesheet" href="/ext/bootstrap/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+    <h1><%= title %></h1>
+	<img src="/images/camera/camera.jpg" id="cameraImg"/>
+	</br>
+     
+      <div class="well"> 
+        <label>Control</label>
+        <input class="btn btn-default" type="button" id="cameraon" value="Start" />
+        <input class="btn btn-default" type="button" id="cameraoff" value="Stop" />
+      </div>
+
+      <div class="well">
+        <label>Move</label>
+        <input class="btn btn-default" type="button" id="camera_left" value="<<" />
+        <input class="btn btn-default" type="button" id="camera_right" value=">>" />
+      </div>
+
+
+      <div class="well">
+        <label>Move</label>
+        <p>
+        <input class="btn btn-default btn-motor" type="button" id="motor_forward" value="F" />
+	</p>
+	<p>
+        <input class="btn btn-default btn-motor" type="button" id="motor_left" value="L" />
+        <input class="btn btn-default btn-motor" type="button" id="motor_right" value="R" />
+	</p>
+	<p>
+        <input class="btn btn-default btn-motor" type="button" id="motor_backward" value="B" />
+	</p>
+	<p>
+        <input class="btn btn-default" type="button" id="motor_stop" value="S" />
+	</p>
+      </div>
+
+    </div>
+  </body>
+
+<script src="/ext/jquery/jquery-2.1.3.min.js"></script>
+<script src="/ext/socket.io/socket.io.js"></script>
+<script src="/ext/bootstrap/js/bootstrap.min.js"></script>
+<script>
+
+$(document).ready(function() {
+	var socket = io.connect('http://'+location.hostname+":3300");
+	socket.on('newimage', function (data) {
+		console.log('newimage: ' + data);
+		
+		$("#cameraImg").attr('src', '/images/camera/camera.jpg?timestamp='+new Date().getTime());
+	});
+
+	$('#cameraon').click(function() {
+		$.get("/pi/camera/on", function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#cameraoff').click(function() {
+		$.get("/pi/camera/off", function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#camera_left').click(function() {
+		$.get("/pi/camera/left", function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#camera_right').click(function() {
+		$.get("/pi/camera/right", function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#motor_forward').on('mousedown touchstart', function() {
+		$.post("/pi/motor/forward?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#motor_left').on('mousedown touchstart', function() {
+		$.post("/pi/motor/left?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#motor_right').on('mousedown touchstart', function() {
+		$.post("/pi/motor/right?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#motor_backward').on('mousedown touchstart', function() {
+		$.post("/pi/motor/backward?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+	$('#motor_stop').on('mousedown touchstart', function() {
+		$.post("/pi/motor/stop?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+	$('.btn-motor').on('mouseup touchend', function() {
+		console.log("STOP");
+		$.post("/pi/motor/stop?"+timeparam(), function(data) {
+			console.log(data);
+		});
+	});
+
+});
+
+function timeparam() {
+  return "t=" + new Date().getTime();
+}
+</script>
+
+</html>
